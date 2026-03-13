@@ -219,57 +219,59 @@
         </div>
     </section>
 
+    <!-- Blog Section: Latest Articles -->
+    <section id="latest-blogs" style="max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;">
+        <h2 style="text-align: center; font-size: 2rem; margin-bottom: 0.5rem;">📝 Latest Articles</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 2rem;">Sourcing tips, dropshipping guides, and industry insights</p>
+        <div id="home-post-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;"></div>
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="/blog.html" class="btn" style="background: #333;">View All Articles →</a>
+        </div>
+    </section>
+
     <footer>
         <p>&copy; 2026 YiwuDropshipping. Base Yiwu, Source from China.</p>
     </footer>
 
-    <!-- RSS Blog Feed Script -->
+    <!-- Manual Blog Posts -->
     <script>
-        const RSS_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://yiwu-blog.vercel.app/atom.xml');
-        
-        async function fetchHomePosts() {
-            try {
-                const response = await fetch(RSS_URL);
-                const text = await response.text();
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(text, 'text/xml');
-                const entries = Array.from(xml.querySelectorAll('entry')).slice(0, 3);
-                
-                const container = document.getElementById('home-post-list');
-                
-                if (entries.length === 0) {
-                    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666;">No articles yet.</p>';
-                    return;
-                }
-                
-                let html = '';
-                entries.forEach(entry => {
-                    const title = entry.querySelector('title')?.textContent || 'Untitled';
-                    const link = entry.querySelector('link')?.getAttribute('href') || '#';
-                    const updated = entry.querySelector('updated')?.textContent || entry.querySelector('published')?.textContent || '';
-                    const date = updated ? new Date(updated).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-                    const summary = entry.querySelector('summary')?.textContent || entry.querySelector('content')?.textContent || '';
-                    const excerpt = summary.replace(/<[^>]*>/g, '').substring(0, 100) + '...';
-                    
-                    html += `
-                        <div class="post-card" style="background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s;">
-                            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">
-                                <a href="${link}" target="_blank" style="color: #333; text-decoration: none; font-weight: 600;">${title}</a>
-                            </h3>
-                            <div style="color: #999; font-size: 0.85rem; margin-bottom: 0.75rem;">📅 ${date}</div>
-                            <p style="color: #666; font-size: 0.95rem; line-height: 1.6;">${excerpt}</p>
-                            <a href="${link}" target="_blank" style="display: inline-block; margin-top: 1rem; color: #de2910; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Read more →</a>
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-                
-            } catch (error) {
-                console.error('RSS fetch error:', error);
-                document.getElementById('home-post-list').innerHTML = 
-                    '<p style="grid-column: 1/-1; text-align: center; color: #666;">Unable to load articles.</p>';
+        const POSTS = [
+            {
+                slug: "how-to-start-dropshipping",
+                title: "How to Start Dropshipping from Yiwu",
+                date: "2026-03-12",
+                excerpt: "Want to start cross-border e-commerce from Yiwu? This guide covers everything you need to know..."
+            },
+            {
+                slug: "yiwu-market-guide",
+                title: "Yiwu Market Guide: How to Source Products",
+                date: "2026-03-10",
+                excerpt: "Navigate the Yiwu International Trade City like a pro. Tips on finding suppliers..."
+            },
+            {
+                slug: "shipping-methods",
+                title: "Shipping Methods Comparison",
+                date: "2026-03-08",
+                excerpt: "Air freight vs sea freight vs express: Compare delivery times, costs..."
             }
+        ];
+        
+        function fetchHomePosts() {
+            const container = document.getElementById('home-post-list');
+            
+            let html = '';
+            POSTS.forEach(post => {
+                html += `
+                    <div style="background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s; cursor: pointer;" onclick="window.location.href='/blog.html?post=${post.slug}'">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: #333; font-weight: 600;">${post.title}</h3>
+                        <div style="color: #999; font-size: 0.85rem; margin-bottom: 0.75rem;">📅 ${post.date}</div>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.6;">${post.excerpt}</p>
+                        <a href="/blog.html?post=${post.slug}" style="display: inline-block; margin-top: 1rem; color: #de2910; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Read more →</a>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
         }
         
         fetchHomePosts();

@@ -24,15 +24,11 @@
         
         /* Post List */
         .post-list { display: flex; flex-direction: column; gap: 1.5rem; }
-        .post-card { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s; }
+        .post-card { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s; cursor: pointer; }
         .post-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(222,41,16,0.12); }
-        .post-title { font-size: 1.4rem; margin-bottom: 0.5rem; }
-        .post-title a { color: #333; text-decoration: none; font-weight: 600; }
-        .post-title a:hover { color: #de2910; }
+        .post-title { font-size: 1.4rem; margin-bottom: 0.5rem; color: #333; font-weight: 600; }
         .post-meta { color: #999; font-size: 0.9rem; margin-bottom: 1rem; }
         .post-excerpt { color: #666; line-height: 1.7; }
-        .read-more { display: inline-block; margin-top: 1rem; color: #de2910; text-decoration: none; font-weight: 500; }
-        .read-more:hover { text-decoration: underline; }
         
         /* Single Post */
         .post-detail { background: #fff; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
@@ -42,9 +38,6 @@
         .post-detail .content img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
         .back-link { display: inline-block; margin-bottom: 1.5rem; color: #666; text-decoration: none; }
         .back-link:hover { color: #de2910; }
-        
-        /* Loading */
-        .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
         
         /* Footer */
         footer { text-align: center; padding: 2rem; color: #666; border-top: 1px solid #eee; margin-top: 3rem; background: #fff; }
@@ -64,15 +57,17 @@
     </header>
 
     <div class="container">
-        <h1 class="page-title">📝 Blog — Sourcing Tips & Guides</h1>
-        
-        <!-- 文章列表 -->
-        <div class="post-list" id="post-list">
-            <div class="loading">📡 Loading articles from RSS...</div>
+        <!-- Post List View -->
+        <div id="post-list-view">
+            <h1 class="page-title">📝 Blog — Sourcing Tips & Guides</h1>
+            <div class="post-list" id="post-list"></div>
         </div>
         
-        <!-- 文章详情 -->
-        <div class="post-detail" id="post-detail" style="display: none;"></div>
+        <!-- Single Post View -->
+        <div id="post-detail-view" style="display: none;">
+            <a href="/blog.html" class="back-link">← Back to Blog</a>
+            <div class="post-detail" id="post-detail"></div>
+        </div>
     </div>
 
     <footer>
@@ -80,58 +75,135 @@
     </footer>
 
     <script>
-        // RSS feed 地址
-        const RSS_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://yiwu-blog.vercel.app/atom.xml');
-        
-        // 解析 RSS
-        async function fetchPosts() {
-            try {
-                const response = await fetch(RSS_URL);
-                const text = await response.text();
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(text, 'text/xml');
-                const entries = xml.querySelectorAll('entry');
+        // ===== 在这里添加你的文章 =====
+        const POSTS = [
+            {
+                slug: "how-to-start-dropshipping",
+                title: "How to Start Dropshipping from Yiwu: Complete Beginner's Guide",
+                date: "2026-03-12",
+                excerpt: "Want to start cross-border e-commerce from Yiwu? This guide covers everything you need to know about sourcing and dropshipping from the world's largest wholesale market...",
+                content: `<p>Want to start cross-border e-commerce from Yiwu? This guide covers everything you need to know about sourcing and dropshipping from the world's largest wholesale market.</p>
                 
-                const container = document.getElementById('post-list');
+                <h2>Why Yiwu?</h2>
+                <p>Yiwu International Trade City is the world's largest small commodity market with over 180,000 suppliers under one roof. Whether you need electronics, fashion accessories, home goods, or toys, you can find everything here at wholesale prices.</p>
                 
-                if (entries.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #666;">No articles found.</p>';
-                    return;
-                }
+                <h2>How to Start</h2>
+                <ol>
+                    <li><strong>Research your niche</strong> - Find profitable products</li>
+                    <li><strong>Contact suppliers</strong> - Use our sourcing service</li>
+                    <li><strong>Set up your store</strong> - Shopify, WooCommerce, etc.</li>
+                    <li><strong>Test with small orders</strong> - Start with 5-10 units</li>
+                    <li><strong>Scale up</strong> - Optimize based on data</li>
+                </ol>
                 
-                let html = '';
-                entries.forEach(entry => {
-                    const title = entry.querySelector('title')?.textContent || 'Untitled';
-                    const link = entry.querySelector('link')?.getAttribute('href') || '#';
-                    const updated = entry.querySelector('updated')?.textContent || entry.querySelector('published')?.textContent || '';
-                    const date = updated ? new Date(updated).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-                    const summary = entry.querySelector('summary')?.textContent || entry.querySelector('content')?.textContent || '';
-                    // 清理 HTML 标签作为摘要
-                    const excerpt = summary.replace(/<[^>]*>/g, '').substring(0, 150) + '...';
-                    
-                    html += `
-                        <div class="post-card">
-                            <h2 class="post-title">
-                                <a href="${link}" target="_blank">${title}</a>
-                            </h2>
-                            <div class="post-meta">📅 ${date}</div>
-                            <p class="post-excerpt">${excerpt}</p>
-                            <a href="${link}" target="_blank" class="read-more">Read more →</a>
-                        </div>
-                    `;
-                });
+                <p>Contact us today to start your dropshipping business!</p>`
+            },
+            {
+                slug: "yiwu-market-guide",
+                title: "Yiwu Market Guide: How to Source Products Effectively",
+                date: "2026-03-10",
+                excerpt: "Navigate the Yiwu International Trade City like a pro. Tips on finding suppliers, negotiating prices, and quality control...",
+                content: `<p>Navigate the Yiwu International Trade City like a pro. This guide covers tips on finding suppliers, negotiating prices, and quality control.</p>
                 
-                container.innerHTML = html;
+                <h2>Market Layout</h2>
+                <p>The market has 7 districts, each focusing on different product categories:</p>
+                <ul>
+                    <li>District 1: Cosmetics, Stationery</li>
+                    <li>District 2: Jewelry, Accessories</li>
+                    <li>District 3: Toys, Gifts</li>
+                    <li>District 4: Electronics</li>
+                    <li>District 5: Hardware, Tools</li>
+                </ul>
                 
-            } catch (error) {
-                console.error('RSS fetch error:', error);
-                document.getElementById('post-list').innerHTML = 
-                    '<p style="text-align: center; color: #666;">Unable to load articles. Please visit our <a href="https://yiwudropshipping.cn" style="color: #de2910;">original blog</a>.</p>';
+                <h2>Tips for Sourcing</h2>
+                <p>Always ask for samples, negotiate MOQs, and build relationships with suppliers for better prices.</p>`
+            },
+            {
+                slug: "shipping-methods",
+                title: "Shipping Methods Comparison: Which One to Choose?",
+                date: "2026-03-08",
+                excerpt: "Air freight vs sea freight vs express: Compare delivery times, costs and choose the best shipping method for your dropshipping business...",
+                content: `<p>Air freight vs sea freight vs express: Compare delivery times, costs and choose the best shipping method for your dropshipping business.</p>
+                
+                <h2>Shipping Options</h2>
+                <ul>
+                    <li><strong>Express (DHL, UPS, FedEx)</strong> - 3-7 days, expensive</li>
+                    <li><strong>Air Freight</strong> - 7-15 days, moderate cost</li>
+                    <li><strong>Sea Freight</strong> - 20-30 days, cheapest for bulk</li>
+                </ul>
+                
+                <p>For dropshipping, we recommend express or air freight for fast delivery and customer satisfaction.</p>`
+            },
+            {
+                slug: "niche-selection",
+                title: "How to Select Profitable Niche Products",
+                date: "2026-03-05",
+                excerpt: "Product selection is half the battle. Learn how to analyze market data and find high-margin products from Yiwu market...",
+                content: `<p>Product selection is half the battle. Learn how to analyze market data and find high-margin products from Yiwu market.</p>
+                
+                <h2>What to Look For</h2>
+                <ul>
+                    <li>High demand, low competition</li>
+                    <li>Lightweight and small (low shipping cost)</li>
+                    <li>Not easily breakable</li>
+                    <li>Good profit margin (at least 50%)</li>
+                    <li>Trend potential</li>
+                </ul>
+                
+                <p>We can help you find the best niche products!</p>`
             }
+        ];
+        // ===== 文章列表结束 =====
+        
+        // Get post from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const postSlug = urlParams.get('post');
+        
+        if (postSlug) {
+            showPost(postSlug);
+        } else {
+            showPostList();
         }
         
-        // 页面加载时获取文章
-        fetchPosts();
+        function showPostList() {
+            const container = document.getElementById('post-list');
+            let html = '';
+            
+            POSTS.forEach(post => {
+                html += `
+                    <div class="post-card" onclick="window.location.href='?post=${post.slug}'">
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-meta">📅 ${post.date}</div>
+                        <p class="post-excerpt">${post.excerpt}</p>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html || '<p style="text-align: center; color: #666;">No articles yet.</p>';
+        }
+        
+        function showPost(slug) {
+            const post = POSTS.find(p => p.slug === slug);
+            const listView = document.getElementById('post-list-view');
+            const detailView = document.getElementById('post-detail-view');
+            const detailContainer = document.getElementById('post-detail');
+            
+            if (!post) {
+                detailContainer.innerHTML = '<p>Post not found.</p>';
+                listView.style.display = 'none';
+                detailView.style.display = 'block';
+                return;
+            }
+            
+            listView.style.display = 'none';
+            detailView.style.display = 'block';
+            
+            detailContainer.innerHTML = `
+                <h1>${post.title}</h1>
+                <div class="post-meta">📅 ${post.date}</div>
+                <div class="content">${post.content}</div>
+            `;
+        }
     </script>
 </body>
 </html>
