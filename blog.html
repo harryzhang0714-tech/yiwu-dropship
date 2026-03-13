@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - YiwuDropshipping</title>
+    <meta name="description" content="Latest articles about dropshipping, Yiwu sourcing, and e-commerce tips">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f8fafc; }
+        
+        /* Header */
+        header { background: #fff; border-bottom: 3px solid #de2910; padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; }
+        nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #de2910; text-decoration: none; }
+        .logo span { color: #f5a623; }
+        .nav-links a { margin-left: 2rem; text-decoration: none; color: #666; font-weight: 500; }
+        .nav-links a:hover { color: #de2910; }
+        .contact-email { color: #666; font-size: 0.9rem; }
+        
+        /* Main */
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        .page-title { font-size: 2.5rem; margin-bottom: 2rem; color: #1a1a1a; border-bottom: 3px solid #de2910; padding-bottom: 0.5rem; display: inline-block; }
+        
+        /* Post List */
+        .post-list { display: flex; flex-direction: column; gap: 1.5rem; }
+        .post-card { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s; }
+        .post-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(222,41,16,0.12); }
+        .post-title { font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .post-title a { color: #333; text-decoration: none; font-weight: 600; }
+        .post-title a:hover { color: #de2910; }
+        .post-meta { color: #999; font-size: 0.9rem; margin-bottom: 1rem; }
+        .post-excerpt { color: #666; line-height: 1.7; }
+        .read-more { display: inline-block; margin-top: 1rem; color: #de2910; text-decoration: none; font-weight: 500; }
+        .read-more:hover { text-decoration: underline; }
+        
+        /* Single Post */
+        .post-detail { background: #fff; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .post-detail h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .post-detail .post-meta { margin-bottom: 1.5rem; }
+        .post-detail .content { line-height: 1.8; }
+        .post-detail .content img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+        .back-link { display: inline-block; margin-bottom: 1.5rem; color: #666; text-decoration: none; }
+        .back-link:hover { color: #de2910; }
+        
+        /* Loading */
+        .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
+        
+        /* Footer */
+        footer { text-align: center; padding: 2rem; color: #666; border-top: 1px solid #eee; margin-top: 3rem; background: #fff; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Yiwu<span>Dropshipping</span></a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/blog.html">Blog</a>
+                <a href="/contact.html">Contact</a>
+            </div>
+            <div class="contact-email">📧 info@yiwudropshipping.cn</div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">📝 Blog — Sourcing Tips & Guides</h1>
+        
+        <!-- 文章列表 -->
+        <div class="post-list" id="post-list">
+            <div class="loading">📡 Loading articles from RSS...</div>
+        </div>
+        
+        <!-- 文章详情 -->
+        <div class="post-detail" id="post-detail" style="display: none;"></div>
+    </div>
+
+    <footer>
+        <p>© 2026 YiwuDropshipping. Base Yiwu, Source from China.</p>
+    </footer>
+
+    <script>
+        // RSS feed 地址
+        const RSS_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://yiwu-blog.vercel.app/atom.xml');
+        
+        // 解析 RSS
+        async function fetchPosts() {
+            try {
+                const response = await fetch(RSS_URL);
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(text, 'text/xml');
+                const entries = xml.querySelectorAll('entry');
+                
+                const container = document.getElementById('post-list');
+                
+                if (entries.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666;">No articles found.</p>';
+                    return;
+                }
+                
+                let html = '';
+                entries.forEach(entry => {
+                    const title = entry.querySelector('title')?.textContent || 'Untitled';
+                    const link = entry.querySelector('link')?.getAttribute('href') || '#';
+                    const updated = entry.querySelector('updated')?.textContent || entry.querySelector('published')?.textContent || '';
+                    const date = updated ? new Date(updated).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+                    const summary = entry.querySelector('summary')?.textContent || entry.querySelector('content')?.textContent || '';
+                    // 清理 HTML 标签作为摘要
+                    const excerpt = summary.replace(/<[^>]*>/g, '').substring(0, 150) + '...';
+                    
+                    html += `
+                        <div class="post-card">
+                            <h2 class="post-title">
+                                <a href="${link}" target="_blank">${title}</a>
+                            </h2>
+                            <div class="post-meta">📅 ${date}</div>
+                            <p class="post-excerpt">${excerpt}</p>
+                            <a href="${link}" target="_blank" class="read-more">Read more →</a>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('RSS fetch error:', error);
+                document.getElementById('post-list').innerHTML = 
+                    '<p style="text-align: center; color: #666;">Unable to load articles. Please visit our <a href="https://yiwudropshipping.cn" style="color: #de2910;">original blog</a>.</p>';
+            }
+        }
+        
+        // 页面加载时获取文章
+        fetchPosts();
+    </script>
+</body>
+</html>
